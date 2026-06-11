@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VocabBoard - Tablero de Aprendizaje Interactivo</title>
+
+    <!-- Google Fonts: Outfit (Headings) & Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- App Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background glow elements -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div class="app-container">
+        <!-- Sidebar or Header section -->
+        <header class="app-header">
+            <div class="brand-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
+                            stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 7V12L15 15" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <defs>
+                            <linearGradient id="logo-grad" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#00f2fe" />
+                                <stop offset="100%" stop-color="#4facfe" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Ingles</h1>
+                    <p class="subtitle">Aprende con imágenes y sonidos</p>
+                </div>
+            </div>
+
+            <!-- Global Word Stats -->
+            <div class="global-stats glass-panel">
+                <div class="global-stat-item">
+                    <span class="global-stat-val" id="totalWordsCount">0</span>
+                    <span class="global-stat-lbl">Palabras</span>
+                </div>
+                <div class="global-stat-divider"></div>
+                <div class="global-stat-item">
+                    <span class="global-stat-val text-success-g" id="learnedWordsCount">0</span>
+                    <span class="global-stat-lbl">Aprendidas</span>
+                </div>
+            </div>
+
+            <!-- Streak & Attendance Widget -->
+            <div class="streak-widget glass-panel" id="streakWidget">
+                <div class="streak-info">
+                    <div class="streak-fire" id="streakFire">
+                        <span class="fire-icon">🔥</span>
+                        <span class="streak-count" id="streakCount">0</span>
+                    </div>
+                    <div class="streak-text">
+                        <span class="streak-label">Racha de Estudio</span>
+                        <span class="streak-status" id="streakStatus">¡Comienza hoy!</span>
+                    </div>
+                </div>
+
+                <div class="weekly-tracker" id="weeklyTracker">
+                    <!-- Dynamic weekly days will be rendered here -->
+                </div>
+
+                <button class="btn-calendar-toggle" id="btnCalendarToggle" title="Ver calendario completo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Motivational Quote Banner for Liz -->
+        <div class="quote-banner glass-panel" id="quoteBanner">
+            <div class="quote-icon">💫</div>
+            <div class="quote-content">
+                <span class="quote-greeting">¡Hola Liz! Tu motivación para hoy:</span>
+                <p class="quote-text" id="quoteText">"El secreto para salir adelante es comenzar. Cada minuto cuenta."
+                </p>
+            </div>
+        </div>
+
+        <!-- Main Workspace Area -->
+        <main class="main-content">
+            <div class="board-toolbar">
+                <div class="search-box glass-panel">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="text" id="searchBar" placeholder="Buscar palabra...">
+                </div>
+
+                <div class="theme-selector glass-panel">
+                    <span class="theme-label">Estilo:</span>
+                    <button type="button" class="theme-dot theme-dot-aurora active" data-theme="aurora"
+                        title="Aurora Glass"></button>
+                    <button type="button" class="theme-dot theme-dot-cyber" data-theme="cyber"
+                        title="Midnight Cyber"></button>
+                    <button type="button" class="theme-dot theme-dot-sunset" data-theme="sunset"
+                        title="Sunset Gold"></button>
+                </div>
+
+                <button class="btn btn-primary" id="btnOpenModal">
+                    <span class="btn-icon">+</span>
+                    <span class="btn-text">Agregar Palabra</span>
+                </button>
+            </div>
+
+            <!-- Scrollable Cards Board -->
+            <div class="board-container">
+                <div class="cards-grid" id="cardsGrid">
+                    <!-- Cards will be dynamically rendered here -->
+                </div>
+
+                <!-- Empty state when no cards exist -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-illustration">
+                        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="100" r="80" stroke="var(--primary-glow)" stroke-width="2"
+                                stroke-dasharray="10 10" class="rotating-ring" />
+                            <path d="M100 60V140M60 100H140" stroke="var(--primary)" stroke-width="6"
+                                stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <h3>El tablero está vacío</h3>
+                    <p>Agrega palabras con sus imágenes y pronunciación para comenzar a practicar.</p>
+                    <button class="btn btn-secondary" id="btnCreateFirst">Crear primera palabra</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Card Modal -->
+    <div class="modal-overlay" id="cardModal">
+        <div class="modal-content glass-panel animated-modal">
+            <button class="modal-close" id="btnCloseModal" title="Cerrar modal">&times;</button>
+
+            <h2>Nueva Tarjeta de Vocabulario</h2>
+            <p class="modal-desc">Completa los datos de la palabra que deseas aprender.</p>
+
+            <form id="cardForm" autocomplete="off">
+                <!-- Image source selector tabs -->
+                <div class="modal-tabs">
+                    <button type="button" class="tab-btn active" data-tab="upload">Archivo Local</button>
+                    <button type="button" class="tab-btn" data-tab="url">Dirección URL</button>
+                </div>
+
+                <!-- Drop/Upload Image Area -->
+                <div class="tab-content" id="tabContentUpload">
+                    <div class="image-upload-container">
+                        <label for="imageInput" class="image-upload-label" id="dropZone">
+                            <input type="file" id="imageInput" accept="image/*" hidden>
+                            <div class="upload-placeholder" id="uploadPlaceholder">
+                                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                                </svg>
+                                <span>Arrastra una imagen aquí o <strong>haz clic para buscar</strong></span>
+                                <span class="file-limits">Soporta JPG, PNG o WebP</span>
+                            </div>
+                            <div class="image-preview-wrapper" id="previewWrapper" style="display: none;">
+                                <img id="imagePreview" alt="Vista previa">
+                                <button type="button" class="btn-remove-image" id="btnRemoveImage"
+                                    title="Cambiar imagen">&times;</button>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Image URL Input Area -->
+                <div class="tab-content" id="tabContentUrl" style="display: none;">
+                    <div class="image-url-container">
+                        <div class="input-group">
+                            <label for="imageUrlInput">Enlace de la imagen (URL)</label>
+                            <input type="url" id="imageUrlInput" placeholder="https://ejemplo.com/imagen.png">
+                        </div>
+                        <div class="image-url-preview-wrapper" id="urlPreviewWrapper" style="display: none;">
+                            <img id="imageUrlPreview" alt="Vista previa de URL">
+                            <button type="button" class="btn-remove-url-image" id="btnRemoveUrlImage"
+                                title="Quitar imagen">&times;</button>
+                        </div>
+
+                        <!-- Image Suggestions Panel -->
+                        <div class="image-suggestions-panel" id="suggestionsPanel" style="display: none;">
+                            <span class="suggestions-title">Imágenes sugeridas (haz clic para seleccionar):</span>
+                            <div class="suggestions-grid" id="suggestionsGrid">
+                                <!-- Thumbnails loaded dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="input-group">
+                    <label for="wordInput">Palabra (Escribe en Inglés o Español)</label>
+                    <div class="input-with-action">
+                        <input type="text" id="wordInput" placeholder="Ej. pot o olla" required>
+                        <button type="button" class="btn-action-input" id="btnAutoTranslate"
+                            title="Autocompletar traducción y pronunciación fonética">
+                            <span class="btn-action-icon">🪄</span>
+                            <span class="btn-action-text">Traducir</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="pronunciationInput">Pronunciación Fonética</label>
+                        <input type="text" id="pronunciationInput" placeholder="Ej. /pɒt/" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="translationInput">Traducción al Español</label>
+                        <input type="text" id="translationInput" placeholder="Ej. olla" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="video1Input">Enlace Video Pronunciación 1 (YouTube, Short o MP4)</label>
+                        <input type="url" id="video1Input"
+                            placeholder="https://www.youtube.com/watch?v=... o archivo.mp4">
+                    </div>
+                    <div class="input-group">
+                        <label for="video2Input">Enlace Video Pronunciación 2 (YouTube, Short o MP4)</label>
+                        <input type="url" id="video2Input"
+                            placeholder="https://www.youtube.com/watch?v=... o archivo.mp4">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" id="btnCancelModal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Tarjeta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Calendar View Modal -->
+    <div class="modal-overlay" id="calendarModal">
+        <div class="modal-content glass-panel animated-modal calendar-modal-content">
+            <button class="modal-close" id="btnCloseCalendarModal" title="Cerrar modal">&times;</button>
+            <h2 id="calendarTitle">Registro mensual</h2>
+            <p class="modal-desc">Marca los días que has practicado para mantener tu racha viva.</p>
+
+            <div class="calendar-grid-container">
+                <div class="calendar-header-days">
+                    <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+                </div>
+                <div class="calendar-days" id="calendarDaysGrid">
+                    <!-- Days dynamically loaded here -->
+                </div>
+            </div>
+
+            <div class="calendar-stats">
+                <div class="stat-box">
+                    <span class="stat-val" id="totalDaysStudied">0</span>
+                    <span class="stat-lbl">Días estudiados</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-val" id="maxStreakVal">0</span>
+                    <span class="stat-lbl">Racha récord</span>
+                </div>
+            </div>
+        </div>
+        <!-- Pronunciation Video Modal -->
+        <div class="modal-overlay" id="pronunciationModal">
+            <div class="modal-content glass-panel animated-modal pronunciation-modal-content">
+                <button class="modal-close" id="btnClosePronunciationModal" title="Cerrar modal">&times;</button>
+                <div class="pronunciation-modal-header-section">
+                    <h2 id="pronunciationWord">Pronunciación de </h2>
+                    <a href="#" target="_blank" class="btn-youtube-global" id="btnYoutubeGlobal"
+                        title="Buscar pronunciación en YouTube">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14"
+                            height="14" style="vertical-align: middle; margin-right: 2px;">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                            <polyline points="15 3 21 3 21 9" />
+                            <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                        <span>Abrir en YouTube ↗</span>
+                    </a>
+                </div>
+                <div class="pronunciation-meta">
+                    <span class="meta-ipa" id="pronunciationIpa">/ipa/</span>
+                    <span class="meta-sep">•</span>
+                    <span class="meta-translation" id="pronunciationTranslation">traducción</span>
+                </div>
+
+                <p class="modal-desc">Mira estos videos cortos para escuchar y ver la articulación de la palabra.</p>
+
+                <div class="videos-container" id="pronunciationVideosContainer">
+                    <!-- Videos will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Sound Wave Effects (Dynamic feedback on speech synthesis) -->
+        <div class="audio-feedback-container" id="audioFeedback">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+
+        <!-- App Scripts -->
+        <script src="app.js"></script>
+</body>
+
+</html>
